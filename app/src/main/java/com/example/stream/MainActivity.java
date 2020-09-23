@@ -1,5 +1,6 @@
 package com.example.stream;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -12,13 +13,17 @@ import android.provider.MediaStore;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.stream.Model.videoUploadDetails;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -42,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     StorageTask mUploadTask;
     DatabaseReference referenceVideos;
     EditText video_description;
-
+    Button upload;
 
 
     @Override
@@ -54,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         video_description=findViewById(R.id.movie_description);
         referenceVideos= FirebaseDatabase.getInstance().getReference().child("videos");
         mstorageRef= FirebaseStorage.getInstance().getReference().child("videos");
-
+        upload =findViewById(R.id.uploads_videos_btn);
         Spinner spinner=findViewById(R.id.spinner);
         spinner.setOnItemSelectedListener(this);
 
@@ -69,6 +74,16 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         ArrayAdapter<String> dataAdapter =new ArrayAdapter<>( this,android.R.layout.simple_spinner_item,categories);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(dataAdapter);
+
+        upload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent in =new Intent(Intent.ACTION_GET_CONTENT);
+                in.setType("video/*");
+                startActivityForResult(in,101);
+            }
+        });
     }
 
 
@@ -87,12 +102,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     }
 
-    public void openvideoFile()
-    {
-        Intent in =new Intent(Intent.ACTION_GET_CONTENT);
-        in.setType("video/*");
-        startActivityForResult(in,101);
-    }
+
+
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
